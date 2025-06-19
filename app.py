@@ -3,7 +3,7 @@ import numpy as np
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
-import tf_keras as tf
+import tensorflow_keras as tf
 from sklearn.preprocessing import StandardScaler
 import io
 import soundfile as sf
