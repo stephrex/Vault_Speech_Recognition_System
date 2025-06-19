@@ -1,7 +1,7 @@
+tensorflow
 numpy
-streamlit==1.46.0
-tensorflow==2.15.0
-librosa==0.11.0
+streamlit
+librosa
 scikit-learn
 matplotlib
-soundfile==0.13.1
+soundfile
