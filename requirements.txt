@@ -1,8 +1,13 @@
-tf_keras
-streamlit
+<<<<<<< HEAD
+Flask
 numpy
 librosa
 scikit-learn
-matplotlib
-soundfile
-tensorflow
+tf_keras
+=======
+Flask
+numpy
+librosa
+scikit-learn
+tf_keras
+>>>>>>> master

@@ -1,84 +1,139 @@
-import streamlit as st
+import os
+from sklearn.preprocessing import StandardScaler
+import tf_keras as tf
 import numpy as np
 import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import tf_keras as tf
-from sklearn.preprocessing import StandardScaler
-import io
-import soundfile as sf
+from flask import Flask, render_template, request
+<< << << < HEAD
 
-# Load your trained model (.keras)
-model = tf.keras.models.load_model(
-    "CNN2_Model.keras")
+app = Flask(__name__)
 
-# Custom preprocessing function (per-sample scaling)
+MODEL_PATH = 'CNN2_Model.keras'
+model = tf.models.load_model(MODEL_PATH)
 
 
-def preprocess_audio_file(file, target_sr=16000, n_mfcc=40, fixed_length=90):
-    x, sr = librosa.load(file, sr=target_sr)
+def preprocess_audio(file_path):
+    target_sr = 16000
+    n_mfcc = 40
+    fixed_length = 90
 
-    # Pad or trim to at least 1 second of audio
+    # Load audio file
+    x, sr = librosa.load(file_path, sr=target_sr)
+
+    # Pad if too short
     if len(x) < target_sr:
-        x = np.pad(x, (0, target_sr - len(x)), 'constant')
-    else:
-        x = x[:target_sr]
+        x = np.pad(x, (0, target_sr - len(x)), mode='constant')
 
-    # Compute MFCC features
-    mfccs = librosa.feature.mfcc(y=x, sr=sr, n_mfcc=n_mfcc)
-    mfccs = np.moveaxis(mfccs, 1, 0)  # shape: (time, features)
+    # Extract MFCC
+    mfcc = librosa.feature.mfcc(y=x, sr=sr, n_mfcc=n_mfcc)
+    mfcc = np.moveaxis(mfcc, 1, 0)  # (Time, Features)
 
-    # Pad or truncate to fixed length (time axis)
-    if mfccs.shape[0] < fixed_length:
-        pad_width = fixed_length - mfccs.shape[0]
-        mfccs = np.pad(mfccs, ((0, pad_width), (0, 0)), mode='constant')
+    # Ensure fixed length
+    if mfcc.shape[0] < fixed_length:
+        pad_width = fixed_length - mfcc.shape[0]
+        mfcc = np.pad(mfcc, ((0, pad_width), (0, 0)), mode='constant')
     else:
-        mfccs = mfccs[:fixed_length, :]
+        mfcc = mfcc[:fixed_length, :]
 
     # Per-sample scaling
     scaler = StandardScaler()
-    mfccs_scaled = scaler.fit_transform(mfccs)
+    # Fit and transform this single sample
+    mfcc_scaled = scaler.fit_transform(mfcc)
 
-    # Reshape for CNN input (batch, time, features, 1)
-    mfccs_scaled = mfccs_scaled.reshape(
-        1, mfccs_scaled.shape[0], mfccs_scaled.shape[1], 1)
+    # Reshape for CNN: (1, time, features, channel)
+    mfcc_scaled = mfcc_scaled.reshape(
+        1, mfcc_scaled.shape[0], mfcc_scaled.shape[1], 1)
 
-    return mfccs_scaled
+    return mfcc_scaled
 
 
-# Streamlit App UI
-st.title("🎤 Audio Classifier (Custom Test)")
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    prediction = None
+    audio_file = None
 
-uploaded_file = st.file_uploader(
-    "Upload an audio file (.wav or .mp3)", type=["wav", "mp3"])
+    if request.method == 'POST':
+        file = request.files['audio']
+        if file:
+            file_path = os.path.join('static', file.filename)
+            file.save(file_path)
 
-if uploaded_file is not None:
-    # Read and decode audio
-    audio_bytes = uploaded_file.read()
-    audio_np, sr = sf.read(io.BytesIO(audio_bytes))
+            features = preprocess_audio(file_path)
+            pred = model.predict(features)
+            predicted_class = np.argmax(pred, axis=1)[0]
+            prediction = f"Predicted Class: {predicted_class}"
 
-    st.audio(uploaded_file, format='audio/wav')
+            audio_file = file.filename
 
-    # Plot waveform
-    st.write("Waveform:")
-    fig, ax = plt.subplots()
-    librosa.display.waveshow(audio_np, sr=sr, ax=ax)
-    st.pyplot(fig)
+    return render_template("index.html", prediction=prediction, audio_file=audio_file)
 
-    # Save to temp file for librosa
-    temp_file_path = "temp_audio.wav"
-    with open(temp_file_path, "wb") as f:
-        f.write(audio_bytes)
 
-    # Preprocess & Predict
-    try:
-        processed_audio = preprocess_audio_file(temp_file_path)
-        prediction = model.predict(processed_audio)
-        predicted_class = np.argmax(prediction)
-        confidence = prediction[0][predicted_class]
+if __name__ == "__main__":
+    app.run(debug=True)
+== == == =
 
-        st.success(
-            f"Predicted Class: {predicted_class} (Confidence: {confidence:.2f})")
+app = Flask(__name__)
 
-    except Exception as e:
-        st.error(f"Error during prediction: {str(e)}")
+MODEL_PATH = 'CNN2_Model.keras'
+model = tf.models.load_model(MODEL_PATH)
+
+
+def preprocess_audio(file_path):
+    target_sr = 16000
+    n_mfcc = 40
+    fixed_length = 90
+
+    # Load audio file
+    x, sr = librosa.load(file_path, sr=target_sr)
+
+    # Pad if too short
+    if len(x) < target_sr:
+        x = np.pad(x, (0, target_sr - len(x)), mode='constant')
+
+    # Extract MFCC
+    mfcc = librosa.feature.mfcc(y=x, sr=sr, n_mfcc=n_mfcc)
+    mfcc = np.moveaxis(mfcc, 1, 0)  # (Time, Features)
+
+    # Ensure fixed length
+    if mfcc.shape[0] < fixed_length:
+        pad_width = fixed_length - mfcc.shape[0]
+        mfcc = np.pad(mfcc, ((0, pad_width), (0, 0)), mode='constant')
+    else:
+        mfcc = mfcc[:fixed_length, :]
+
+    # Per-sample scaling
+    scaler = StandardScaler()
+    # Fit and transform this single sample
+    mfcc_scaled = scaler.fit_transform(mfcc)
+
+    # Reshape for CNN: (1, time, features, channel)
+    mfcc_scaled = mfcc_scaled.reshape(
+        1, mfcc_scaled.shape[0], mfcc_scaled.shape[1], 1)
+
+    return mfcc_scaled
+
+
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    prediction = None
+    audio_file = None
+
+    if request.method == 'POST':
+        file = request.files['audio']
+        if file:
+            file_path = os.path.join('static', file.filename)
+            file.save(file_path)
+
+            features = preprocess_audio(file_path)
+            pred = model.predict(features)
+            predicted_class = np.argmax(pred, axis=1)[0]
+            prediction = f"Predicted Class: {predicted_class}"
+
+            audio_file = file.filename
+
+    return render_template("index.html", prediction=prediction, audio_file=audio_file)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+>>>>>> > master
