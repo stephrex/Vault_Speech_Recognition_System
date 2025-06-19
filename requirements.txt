@@ -5,4 +5,3 @@ librosa
 scikit-learn
 matplotlib
 soundfile
-tensorflow>=2.15
