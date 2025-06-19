@@ -1,6 +1,6 @@
-tensorflow
-matplotlib
-pandas
-seaborn
-scikit-learn
+tensorflow-keras
 numpy
+librosa
+scikit-learn
+matplotlib
+soundfile
