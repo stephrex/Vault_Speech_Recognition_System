@@ -1,4 +1,3 @@
-tensorflow_keras
 tf_keras
 streamlit
 numpy
@@ -6,3 +5,4 @@ librosa
 scikit-learn
 matplotlib
 soundfile
+tensorflow>=2.15
