@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Upload an Audio File</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="audio" accept=".wav" required>
+        <button type="submit">Predict</button>
+    </form>
+    {% if prediction %}
+        <h2>{{ prediction }}</h2>
+        <audio controls>
+            <source src="{{ url_for('static', filename=audio_file) }}" type="audio/wav">
+            Your browser does not support audio.
+        </audio>
+    {% endif %}
+</body>
+</html>
