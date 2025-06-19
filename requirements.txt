@@ -1,6 +1,5 @@
 tensorflow
 numpy
-streamlit
 librosa
 scikit-learn
 matplotlib
