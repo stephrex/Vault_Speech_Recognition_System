@@ -1,6 +1,6 @@
 numpy
 streamlit==1.46.0
-tensorflow==2.17.0
+tensorflow==2.16.0
 librosa==0.11.0
 scikit-learn
 matplotlib
