@@ -1,6 +1,6 @@
 tensorflow
-numpy
-librosa
-scikit-learn
 matplotlib
-soundfile
+pandas
+seaborn
+scikit-learn
+numpy
