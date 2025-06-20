@@ -9,7 +9,7 @@ import io
 import soundfile as sf
 
 # Load your trained model (.keras)
-model = tf.keras.models.load_model(
+model = tf.models.load_model(
     "CNN2_Model.keras")
 
 # Custom preprocessing function (per-sample scaling)
