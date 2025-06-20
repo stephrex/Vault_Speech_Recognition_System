@@ -1,9 +1,11 @@
 flask
 librosa
+tensorflow
 scikit-learn
 tf_keras
 streamlit
 numpy
 matplotlib
 soundfile
-tensorflow
+tf-keras
+tensorflow-keras
