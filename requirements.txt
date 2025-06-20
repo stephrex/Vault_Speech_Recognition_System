@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-Flask
-numpy
+tensorflow
+flask
 librosa
 scikit-learn
 tf_keras
-=======
-Flask
-numpy
-librosa
-scikit-learn
-tf_keras
->>>>>>> master
