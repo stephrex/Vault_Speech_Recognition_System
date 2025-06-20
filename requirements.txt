@@ -3,3 +3,6 @@ librosa
 scikit-learn
 tf_keras
 streamlit
+numpy
+matplotlib
+soundfile
