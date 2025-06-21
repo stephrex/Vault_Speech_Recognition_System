@@ -9,3 +9,4 @@ matplotlib
 soundfile
 tf-keras
 tensorflow-keras
+pydub
