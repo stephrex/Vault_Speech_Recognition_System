@@ -7,6 +7,7 @@ import tf_keras as tf
 from sklearn.preprocessing import StandardScaler
 import io
 import soundfile as sf
+from pydub import AudioSegment
 
 # Load your trained model (.keras)
 model = tf.models.load_model("CNN2_Model.keras")
