@@ -9,8 +9,14 @@ import io
 import soundfile as sf
 
 # Load your trained model (.keras)
-model = tf.models.load_model(
-    "CNN2_Model.keras")
+model = tf.models.load_model("CNN3_Model.keras", safe_mode=True)
+
+# Class label mapping
+class_map = {
+    0: "Close Vault",
+    1: "Open Vault",
+    2: "Unrecognized"
+}
 
 # Custom preprocessing function (per-sample scaling)
 
@@ -77,8 +83,11 @@ if uploaded_file is not None:
         predicted_class = np.argmax(prediction)
         confidence = prediction[0][predicted_class]
 
+        # Map predicted class to label
+        class_label = class_map.get(predicted_class, "Unknown")
+
         st.success(
-            f"Predicted Class: {predicted_class} (Confidence: {confidence:.2f})")
+            f"Predicted Class: {class_label} (Confidence: {confidence:.2f})")
 
     except Exception as e:
         st.error(f"Error during prediction: {str(e)}")
