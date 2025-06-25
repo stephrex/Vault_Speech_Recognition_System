@@ -13,9 +13,9 @@ model = tf.models.load_model("CNN4_Model.keras")
 
 # Class label mapping
 class_map = {
-    0: "Close Vault",
+    0: "Unrecognized",
     1: "Open Vault",
-    2: "Unrecognized"
+    2: "Close Vault"
 }
 
 # Custom preprocessing function (per-sample scaling)
@@ -41,15 +41,11 @@ def preprocess_audio_file(file, target_sr=16000, n_mfcc=40, fixed_length=90):
     else:
         mfccs = mfccs[:fixed_length, :]
 
-    # Per-sample scaling
-    scaler = StandardScaler()
-    mfccs_scaled = scaler.fit_transform(mfccs)
-
     # Reshape for CNN input (batch, time, features, 1)
-    mfccs_scaled = mfccs_scaled.reshape(
-        1, mfccs_scaled.shape[0], mfccs_scaled.shape[1], 1)
+    mfccs = mfccs.reshape(
+        1, mfccs.shape[0], mfccs.shape[1], 1)
 
-    return mfccs_scaled
+    return mfccs
 
 
 # Streamlit App UI
@@ -79,9 +75,11 @@ if uploaded_file is not None:
     # Preprocess & Predict
     try:
         processed_audio = preprocess_audio_file(temp_file_path)
-        prediction = model.predict(processed_audio)
-        predicted_class = np.argmax(prediction)
-        confidence = prediction[0][predicted_class]
+        prediction_prob = model.predict(processed_audio)
+        prediction_prob = np.squeeze(prediction_prob)
+        predicted_index = np.argmax(prediction_prob)
+        predicted_class = np.argmax(prediction_prob)
+        confidence = prediction_prob[predicted_class]
 
         # Map predicted class to label
         class_label = class_map.get(predicted_class, "Unknown")
