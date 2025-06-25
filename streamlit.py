@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import tf_keras as tf
 from sklearn.preprocessing import StandardScaler
 import io
+import tensorflow
 import soundfile as sf
 
 # Load your trained model (.keras)
