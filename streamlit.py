@@ -6,11 +6,10 @@ import matplotlib.pyplot as plt
 import tf_keras as tf
 from sklearn.preprocessing import StandardScaler
 import io
-import tensorflow
 import soundfile as sf
 
 # Load your trained model (.keras)
-model = tf.models.load_model("CNN3_Model.keras", safe_mode=False)
+model = tf.models.load_model("CNN4_Model.keras")
 
 # Class label mapping
 class_map = {
