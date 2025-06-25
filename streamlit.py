@@ -76,13 +76,18 @@ if uploaded_file is not None:
     try:
         processed_audio = preprocess_audio_file(temp_file_path)
         prediction_prob = model.predict(processed_audio)
+        print(prediction_prob)
         prediction_prob = np.squeeze(prediction_prob)
+        print(prediction_prob)
         predicted_index = np.argmax(prediction_prob)
+        print(predicted_index)
         predicted_class = np.argmax(prediction_prob)
+        print(predicted_class)
         confidence = prediction_prob[predicted_class]
 
         # Map predicted class to label
         class_label = class_map.get(predicted_class, "Unknown")
+        print(class_label)
 
         st.success(
             f"Predicted Class: {class_label} (Confidence: {confidence:.2f})")
