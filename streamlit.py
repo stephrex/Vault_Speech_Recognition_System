@@ -9,7 +9,7 @@ import io
 import soundfile as sf
 
 # Load your trained model (.keras)
-model = tf.models.load_model("CNN3_Model.keras", safe_mode=True)
+model = tf.models.load_model("CNN3_Model.keras", safe_mode=False)
 
 # Class label mapping
 class_map = {
