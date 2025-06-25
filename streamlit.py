@@ -18,32 +18,36 @@ class_map = {
     2: "Close Vault"
 }
 
-# Custom preprocessing function (per-sample scaling)
+
+def pad_audio(x, sr, max_duration=4):
+    max_len = sr * max_duration
+    if len(x) < max_len:
+        return np.pad(x, (0, max_len - len(x)), mode='constant')
+    else:
+        return x[:max_len]
 
 
-def preprocess_audio_file(file, target_sr=16000, n_mfcc=40, fixed_length=90):
+def preprocess_audio_file(file, target_sr=16000, n_mfcc=40, fixed_length=90, ndim=3):
+
     x, sr = librosa.load(file, sr=target_sr)
 
-    # Pad or trim to at least 1 second of audio
-    if len(x) < target_sr:
-        x = np.pad(x, (0, target_sr - len(x)), 'constant')
-    else:
-        x = x[:target_sr]
+    x = pad_audio(x, sr)
 
-    # Compute MFCC features
     mfccs = librosa.feature.mfcc(y=x, sr=sr, n_mfcc=n_mfcc)
-    mfccs = np.moveaxis(mfccs, 1, 0)  # shape: (time, features)
+    mfccs = np.moveaxis(mfccs, 1, 0)
 
-    # Pad or truncate to fixed length (time axis)
     if mfccs.shape[0] < fixed_length:
         pad_width = fixed_length - mfccs.shape[0]
         mfccs = np.pad(mfccs, ((0, pad_width), (0, 0)), mode='constant')
     else:
         mfccs = mfccs[:fixed_length, :]
 
-    # Reshape for CNN input (batch, time, features, 1)
-    mfccs = mfccs.reshape(
-        1, mfccs.shape[0], mfccs.shape[1], 1)
+    if ndim == 3:
+        mfccs = mfccs.reshape(1, mfccs.shape[0], mfccs.shape[1], 1)
+    elif ndim == 2:
+        mfccs = mfccs.reshape(1, mfccs.shape[0], mfccs.shape[1])
+    else:
+        raise ValueError("Invalid ndim. Must be 2 or 3.")
 
     return mfccs
 
@@ -75,6 +79,9 @@ if uploaded_file is not None:
     # Preprocess & Predict
     try:
         processed_audio = preprocess_audio_file(temp_file_path)
+        print(processed_audio)
+        print(processed_audio.shape)
+        st.write(processed_audio)
         prediction_prob = model.predict(processed_audio)
         st.write(prediction_prob)
         prediction_prob = np.squeeze(prediction_prob)
